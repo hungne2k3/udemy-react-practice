@@ -1,14 +1,33 @@
 import { useState } from 'react';
 import Button from 'react-bootstrap/Button';
 import Modal from 'react-bootstrap/Modal';
+import { postCreateUser } from '../services/UserServices';
+import { toast } from 'react-toastify';
+
 
 const ModalAddNewUser = (popos) => {
-    const { show, handleClose } = popos;
+    const { show, handleClose, handleUppdateUser } = popos;
     const [name, setName] = useState("");
     const [job, setJob] = useState('');
 
-    const handleSaveUser = () => {
-        console.log(">>> Check: Name = ", name , "job = ", job)
+    // Add user
+    const handleSaveUser = async () => {
+        let res = await postCreateUser(name, job)
+        console.log(">>> Check: Res = ", res);
+
+        if (res && res.id) {
+            // success
+            handleClose();
+            setName('');
+            setJob('');
+            // sau khi add thanh cong thi bắn ra thông báo (toastifi)
+            toast.success("A user create succeed!");
+            handleUppdateUser({first_name: name, is: res.id})
+        }
+        else {
+            // erro
+            toast.error("An Error!");
+        }
     }
 
     return (
@@ -31,8 +50,8 @@ const ModalAddNewUser = (popos) => {
                             <label className="form-label">Job
                             </label>
                             <input type="text" className="form-control"
-                            value={job}
-                            onChange={(event) => setJob(event.target.value)}
+                                value={job}
+                                onChange={(event) => setJob(event.target.value)}
                             />
                         </div>
                     </form>

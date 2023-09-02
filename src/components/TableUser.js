@@ -1,6 +1,7 @@
 import axios from 'axios';
 import { useEffect, useState } from 'react';
 import Table from 'react-bootstrap/Table';
+import ModalAddNewUser from './ModalAddNewUser';
 import { fetchAllUser } from '../services/UserServices'; import ReactPaginate from 'react-paginate';
 
 const TableUser = (props) => {
@@ -8,9 +9,18 @@ const TableUser = (props) => {
     const [totalUser, setTotalUser] = useState(0);
     const [totalPages, setTotalPages] = useState(0);
 
+    const [isShowModalAdd, setIsShowModalAdd] = useState(false);
+
+    const handleClose = () => {
+        setIsShowModalAdd(false)
+    }
+
+    const handleUppdateUser = (user) => {
+        setListUser([user, ...listUSer])
+    }
+
     // call Api
     useEffect(() => {
-
         // call pagination deafult 1
         getUSer(1);
     }, []);
@@ -29,11 +39,21 @@ const TableUser = (props) => {
     const handlePageClick = (event) => {
         // event click page
         // "+" đằng trc event để nếu là string thì chuyển qua number
-        getUSer( + event.selected + 1)
+        getUSer(+ event.selected + 1)
     }
 
     return (
         <>
+            <div className='my-3 add-new'>
+                <span><p>List User: </p></span>
+                <button
+                    className='btn btn-success'
+                    onClick={() => setIsShowModalAdd(true)}
+                >
+                    Add new user
+                </button>
+            </div>
+
             <Table striped bordered hover>
                 <thead>
                     <tr>
@@ -75,6 +95,12 @@ const TableUser = (props) => {
                 breakLinkClassName='page-link'
                 containerClassName='pagination'
                 activeClassName='active'
+            />
+
+            <ModalAddNewUser
+                show={isShowModalAdd}
+                handleClose={handleClose}
+                handleUppdateUser={handleUppdateUser}
             />
         </>
     )
